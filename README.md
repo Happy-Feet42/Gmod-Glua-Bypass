@@ -21,7 +21,7 @@ I'm not sure how to use All the scripts but the ones I've tested are.
 -smeg  
 -OneMenu
 
-[Download](https://github.com/Happy-Feet42/Gmod-Glua-Bypass/archive/main.zip)
+[Download](https://github.com/Happy-Feet42/Gmod-Glua-Bypass/archive/main.zip)  
 <3 Jamie Free
 
 <img src="https://i.imgur.com/tw6dlcZ.png" width="400">
