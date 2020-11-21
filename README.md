@@ -8,8 +8,8 @@
 4. Join Server & Enjoy
 
 
-To run scripts simple open console (~) And type "lua_openscript_cl ScriptName.lua", Replacing Script Name with one from the list.  
-Be carefull, I've tried most scripts and removed the one that got me banned 🤡
+To run scripts simply open console (~) And type "lua_openscript_cl ScriptName.lua", Replacing Script Name with one from the list.  
+!!!WARNING!!! Just becarefull, I've tried most scripts and removed the one that got me banned so they should be completely fine now, also don't touch anything from the expliots folders i'm not sure what any of it does yet lmao. 🤡
 
 
 I'm not sure how to use All the scripts but the ones i've tested are.
