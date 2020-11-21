@@ -17,7 +17,7 @@ I'm not sure how to use All the scripts but the ones I've tested are.
 
 -odiuumfixed  | bind k ace_menu  
 -TrinityHack | bind k +bh_menu  
--Smenu  | bind k Scheat_menu
+-Smenu  | bind k sCheat_menu
 -smeg  
 -OneMenu
 
