@@ -1,7 +1,7 @@
 # Gmod-Glua-Bypass
  
  1. Move the contents of "Scripts" to C:\SteamLibrary\steamapps\common\GarrysMod\garrysmod\lua
- https://i.imgur.com/tw6dlcZ.png
+ ![tw6dlcZ](https://user-images.githubusercontent.com/28389628/99872305-d61bab80-2bd8-11eb-9f61-8161255bd406.png)
 
 2. Load Garrys Mod 64-Bit!
 3. Open Extreme Injector & Inject "Friendly Bypass" Into Gmod
