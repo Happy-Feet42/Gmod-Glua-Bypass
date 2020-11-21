@@ -1,7 +1,7 @@
 # Gmod-Glua-Bypass
  
  1. Move the contents of "Scripts" to C:\SteamLibrary\steamapps\common\GarrysMod\garrysmod\lua
- <img src="https://i.imgur.com/tw6dlcZ.png" width="200">
+ Image at the bottom of Readme ^
 
 2. Load Garrys Mod 64-Bit!
 3. Open Extreme Injector & Inject "Friendly Bypass" Into Gmod
@@ -9,7 +9,7 @@
 
 
 To run scripts simple open console (~) And type "lua_openscript_cl ScriptName.lua", Replacing Script Name with one from the list.  
-Be carefull, I've tried most scripts and removed the one that got me banned :Clown: ):
+Be carefull, I've tried most scripts and removed the one that got me banned 🤡
 
 
 I'm not sure how to use All the scripts but the ones i've tested are.
@@ -21,3 +21,5 @@ I'm not sure how to use All the scripts but the ones i've tested are.
 -OneMenu
 
 <3 Jamie Free
+
+<img src="https://i.imgur.com/tw6dlcZ.png" width="400">
