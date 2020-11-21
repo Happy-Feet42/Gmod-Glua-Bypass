@@ -18,7 +18,7 @@ I'm not sure how to use All the scripts but the ones I've tested are.
 -odiuumfixed  | bind k ace_menu  
 -TrinityHack | bind k +bh_menu  
 -Smenu  | bind k sCheat_menu
--smeg  | F11 (I think?)
+-smeg  | F11 (I think?)  
 -OneMenu | Or this one could be the F11 no clue lmao
 
 [Download](https://github.com/Happy-Feet42/Gmod-Glua-Bypass/archive/main.zip)  
